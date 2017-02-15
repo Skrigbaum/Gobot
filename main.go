@@ -74,14 +74,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == BotID {
 		return
 	}
-	if msg == "vyrtec" {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "The Autist?")
-	}
-
-	if msg == "sly" {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "Weaboo for sure")
-	}
-
 	// If the message is "ping" reply with "Pong!"
 	if msg == "ping" {
 		_, _ = s.ChannelMessageSend(m.ChannelID, "Pong!")
@@ -91,9 +83,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if msg == "pong" {
 		_, _ = s.ChannelMessageSend(m.ChannelID, "Ping!")
 	}
+	//if the message is !gobot return a helpful message
+	if msg == "!gobot" {
+		_, _ = s.ChannelMessageSend(m.ChannelID, "Hi I'm Gobot. Currently typing !card returns a magic card and !char returns a random D&D character.")
+	}
 
 	if strings.Contains(msg, "!card") {
-		cardName := Mtg()
+		cardName := Mtg(msg)
 		if err != nil {
 			fmt.Println("Error retriving card,", err)
 			return
@@ -117,8 +113,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 //Mtg Grabs card from DB
-func Mtg() string {
+func Mtg(input string) string {
 	var name string
+	var splitString = strings.Split(input, " ")
 
 	db, err = sql.Open("mysql", "root:1Merdenomz1@/magic")
 	if err != nil {
@@ -126,15 +123,20 @@ func Mtg() string {
 	}
 	defer db.Close()
 
-	err = db.QueryRow("SELECT MULTIVERSEID FROM CARDS ORDER BY RAND() LIMIT 1").Scan(&name)
-	if err != nil {
-		panic(err.Error())
+	//Check for input.
+	if len(splitString) > 1 {
+		var typeErr = db.QueryRow("SELECT MULTIVERSEID FROM CARDS WHERE TYPE = '" + splitString[1] + "' ORDER BY RAND() LIMIT 1").Scan(&name)
+		if typeErr != nil {
+			return "There seems to have been a problem with the type you entered, please try again."
+		}
+		// if no type input
+	} else {
+		err = db.QueryRow("SELECT MULTIVERSEID FROM CARDS ORDER BY RAND() LIMIT 1").Scan(&name)
+		if err != nil {
+			panic(err.Error())
+		}
 	}
 
-	//err = card.Scan(&cardName)
-	if err != nil {
-		panic(err.Error())
-	}
 	db.Close()
 	var url = fmt.Sprintf("http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + name + "&type=card")
 	return url
@@ -153,6 +155,7 @@ func Char() string {
 		panic(err.Error())
 	}
 
+	//Queries need to be done like this due to bug in Mysql Driver for GO not supporting Stored Procedures
 	_ = db.QueryRow("SELECT adjective FROM magic.character where adjective != '' ORDER BY RAND() LIMIT 1;").Scan(&adj)
 	_ = db.QueryRow("SELECT race FROM magic.character where race != '' ORDER BY RAND() LIMIT 1;").Scan(&race)
 	_ = db.QueryRow("SELECT class FROM magic.character where class != '' ORDER BY RAND() LIMIT 1;").Scan(&class)
