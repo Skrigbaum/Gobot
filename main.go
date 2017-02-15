@@ -85,7 +85,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	//if the message is !gobot return a helpful message
 	if msg == "!gobot" {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "Hi I'm Gobot. Currently typing !card returns a magic card and !char returns a random D&D character.")
+		_, _ = s.ChannelMessageSend(m.ChannelID, "Hi I'm Gobot. Currently typing '!card returns a random magic card', '!card type *X* returns a card of that type', '!card rarity *X* returns a card of that rarity'. \n!char returns a random D&D character.")
 	}
 
 	if strings.Contains(msg, "!card") {
@@ -115,6 +115,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 //Mtg Grabs card from DB
 func Mtg(input string) string {
 	var name string
+	var skip bool
 	var splitString = strings.Split(input, " ")
 
 	db, err = sql.Open("mysql", "root:1Merdenomz1@/magic")
@@ -123,22 +124,38 @@ func Mtg(input string) string {
 	}
 	defer db.Close()
 
-	//Check for input.
-	if len(splitString) > 1 {
-		var typeErr = db.QueryRow("SELECT MULTIVERSEID FROM CARDS WHERE TYPE = '" + splitString[1] + "' ORDER BY RAND() LIMIT 1").Scan(&name)
-		if typeErr != nil {
-			return "There seems to have been a problem with the type you entered, please try again."
-		}
-		// if no type input
-	} else {
+	//Default Card call
+	if len(splitString) == 1 {
 		err = db.QueryRow("SELECT MULTIVERSEID FROM CARDS ORDER BY RAND() LIMIT 1").Scan(&name)
 		if err != nil {
 			panic(err.Error())
 		}
+		skip = true
+	}
+	//Type check
+	if !skip && splitString[1] == "type" && len(splitString) > 2 {
+		var typeErr = db.QueryRow("SELECT MULTIVERSEID FROM CARDS WHERE TYPE = '" + splitString[2] + "' ORDER BY RAND() LIMIT 1").Scan(&name)
+		if typeErr != nil {
+			return "There seems to have been a problem with the type you entered, please try again."
+		}
+	}
+	//Name check
+	if !skip && splitString[1] == "rarity" && len(splitString) > 2 {
+		var nameErr = db.QueryRow("SELECT MULTIVERSEID FROM CARDS WHERE rarity like '" + splitString[2] + "%' ORDER BY RAND() LIMIT 1").Scan(&name)
+		if nameErr != nil {
+			return "There seems to have been a problem with the rarity you entered, please try again."
+		}
+	}
+
+	//Default resonse if inproper command
+	if name == "" {
+		return "There seems to have been a problem with the command you entered, please try again."
 	}
 
 	db.Close()
 	var url = fmt.Sprintf("http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + name + "&type=card")
+	name = ""
+	skip = false
 	return url
 }
 
