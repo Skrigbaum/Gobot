@@ -22,7 +22,7 @@ var (
 //Config for DB setup
 type Config struct {
 	DataSourceName string `json:"dataSourceName"`
-	RiotKey        string
+	RiotKey        string `json:"riotApiKey"`
 }
 
 //InitDB allows for creation of DB on bot launch

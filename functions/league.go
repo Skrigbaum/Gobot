@@ -1,6 +1,7 @@
 package functions
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/TrevorSStone/goriot"
@@ -10,17 +11,15 @@ import (
 func League(input string) []string {
 	var response []string
 	var players []goriot.Participant
-	var bans1 []int
-	var bans2 []int
+	var bans []string
 	var splitString = strings.Split(input, " ")
 
 	//Default Card call
 	if len(splitString) == 1 {
-
 		//Assigns FeaturedGame to games variable
-		var games, err = goriot.FeaturedGames("NA")
-		if err != nil {
-			panic(err.Error())
+		games, x := goriot.FeaturedGames("NA")
+		if x != nil {
+			panic(x.Error())
 		}
 		//Iterates through games to find players
 		for _, p := range games[0].Participants {
@@ -28,29 +27,21 @@ func League(input string) []string {
 		}
 		//Goes and finds bans for the games and assigns to either team slice
 		for _, b := range games[0].BannedChampions {
-			if b.TeamID == 1 {
-				bans1 = append(bans1, b.ChampionID)
-			} else {
-				bans2 = append(bans2, b.ChampionID)
-			}
+			name := ChampName(b.ChampionID)
+			bans = append(bans, name)
 		}
 
 		//begin creating response
-		response = append(response, "Match ID: "+string(games[0].GameID))
-		response = append(response, "Current Game Duration: "+string(games[0].GameLength))
-		response = append(response, "Team 1 Banned: ")
-		for _, ban1 := range bans1 {
-			response = append(response, string(ban1))
+		response = append(response, "Current Game Duration: "+strconv.Itoa(games[0].GameLength))
+		response = append(response, "Champions Banned: ")
+		for _, ban1 := range bans {
+			response = append(response, ban1)
 		}
-		response = append(response, "Team 2 Banned: ")
-		for _, ban2 := range bans2 {
-			response = append(response, string(ban2))
-		}
-		for _, player := range players {
-			response = append(response, "Summoner: "+player.SummonerName)
-			response = append(response, "On: "+goriot.ChampionByID("NA", player.ChampionID))
-			response = append(response, ban2)
-
+		for _, p := range players {
+			response = append(response, "Summoner: "+p.SummonerName)
+			response = append(response, "On: "+ChampName(p.ChampionID))
+			response = append(response, ("Player Score: " + string(p.Stats.Kills) + "/" + string(p.Stats.Deaths) + "/" + string(p.Stats.Assists)))
 		}
 	}
+	return response
 }

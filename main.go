@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"strings"
@@ -14,10 +15,11 @@ import (
 
 // Variables used for command line parameters
 var (
-	buffer = make([][]byte, 0)
-	Token  string
-	BotID  string
-	err    error
+	buffer  = make([][]byte, 0)
+	Token   string
+	BotID   string
+	err     error
+	message bytes.Buffer
 )
 
 func init() {
@@ -103,15 +105,18 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	}
 
-	if strings.Contains(msg, "!game") {
-		game := functions.League(msg)
+	if strings.Contains(msg, "!pro") {
+		var game = functions.League(msg)
 		if err != nil {
 			fmt.Println("Error retriving league info,", err)
 			_, _ = s.ChannelMessageSend(m.ChannelID, "Stop breaking stuff.")
 			return
 		}
 
-		_, _ = s.ChannelMessageSend(m.ChannelID, game)
-
+		for _, resp := range game {
+			message.WriteString(resp + "\n")
+		}
+		_, _ = s.ChannelMessageSend(m.ChannelID, message.String())
+		message.Reset()
 	}
 }
