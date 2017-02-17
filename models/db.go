@@ -8,18 +8,21 @@ import (
 	"log"
 	"os"
 
+	"github.com/TrevorSStone/goriot"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 //DB connection global var
 var (
-	DB     *sql.DB
-	config string
+	DB      *sql.DB
+	config  string
+	RiotKey string
 )
 
 //Config for DB setup
 type Config struct {
 	DataSourceName string `json:"dataSourceName"`
+	RiotKey        string
 }
 
 //InitDB allows for creation of DB on bot launch
@@ -49,5 +52,7 @@ func LoadConfig() {
 	}
 
 	config = c[0].DataSourceName
+	RiotKey = c[0].RiotKey
+	goriot.SetAPIKey(RiotKey)
 
 }

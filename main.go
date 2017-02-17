@@ -25,6 +25,7 @@ func init() {
 	flag.StringVar(&Token, "t", "", "Bot Token")
 	flag.Parse()
 	models.LoadConfig()
+
 }
 
 func main() {
@@ -99,6 +100,18 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		_, _ = s.ChannelMessageSend(m.ChannelID, character)
+
+	}
+
+	if strings.Contains(msg, "!game") {
+		game := functions.League(msg)
+		if err != nil {
+			fmt.Println("Error retriving league info,", err)
+			_, _ = s.ChannelMessageSend(m.ChannelID, "Stop breaking stuff.")
+			return
+		}
+
+		_, _ = s.ChannelMessageSend(m.ChannelID, game)
 
 	}
 }
