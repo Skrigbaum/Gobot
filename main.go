@@ -24,12 +24,13 @@ func init() {
 
 	flag.StringVar(&Token, "t", "", "Bot Token")
 	flag.Parse()
+	models.LoadConfig()
 }
 
 func main() {
 
 	//Init DB connection
-	models.InitDB("root:1Merdenomz1@/magic")
+	models.InitDB()
 
 	// Create a new Discord session using the provided bot token.
 	dg, errCon := discordgo.New("Bot " + Token)
