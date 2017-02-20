@@ -10,38 +10,43 @@ import (
 //League fetches RIOT games API data on current games
 func League(input string) []string {
 	var response []string
-	var players []goriot.Participant
-	var bans []string
 	var splitString = strings.Split(input, " ")
 
 	//Default Card call
-	if len(splitString) == 1 {
+	if len(splitString) == 2 {
 		//Assigns FeaturedGame to games variable
-		games, x := goriot.FeaturedGames("NA")
+		normalizedName := goriot.NormalizeSummonerName(splitString[1])
+		summoner, x := goriot.SummonerByName("NA", normalizedName[0])
 		if x != nil {
-			panic(x.Error())
+			response = append(response, "Error Retrieving account")
 		}
-		//Iterates through games to find players
-		for _, p := range games[0].Participants {
-			players = append(players, p)
-		}
-		//Goes and finds bans for the games and assigns to either team slice
-		for _, b := range games[0].BannedChampions {
-			name := ChampName(b.ChampionID)
-			bans = append(bans, name)
+		var sumName = summoner[normalizedName[0]].Name
+		response = append(response, sumName)
+
+		matchHistory, matchErr := goriot.RecentGameBySummoner("na", summoner[normalizedName[0]].ID)
+		if matchErr != nil {
+			panic(matchErr.Error())
 		}
 
-		//begin creating response
-		response = append(response, "Current Game Duration: "+strconv.Itoa(games[0].GameLength))
-		response = append(response, "Champions Banned: ")
-		for _, ban1 := range bans {
-			response = append(response, ban1)
-		}
-		for _, p := range players {
-			response = append(response, "Summoner: "+p.SummonerName)
-			response = append(response, "On: "+ChampName(p.ChampionID))
-			response = append(response, ("Player Score: " + string(p.Stats.Kills) + "/" + string(p.Stats.Deaths) + "/" + string(p.Stats.Assists)))
+		for _, game := range matchHistory {
+
+			response = append(response, "Game ID: "+strconv.FormatInt(game.GameID, 10))
+			response = append(response, "Playing: "+ChampName(game.ChampionID))
+			response = append(response, "Score: "+strconv.Itoa(game.Statistics.ChampionsKilled)+"/"+strconv.Itoa(game.Statistics.NumDeaths)+"/"+strconv.Itoa(game.Statistics.Assists))
+			if game.Statistics.NexusKilled == true {
+				response = append(response, "You Lost \n")
+			} else {
+				response = append(response, "You Won \n")
+			}
 		}
 	}
 	return response
+}
+
+func Random() string {
+	var char string
+	for k := range Champions {
+		return k
+	}
+	return char
 }

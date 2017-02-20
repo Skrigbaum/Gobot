@@ -119,4 +119,16 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		_, _ = s.ChannelMessageSend(m.ChannelID, message.String())
 		message.Reset()
 	}
+
+	if strings.Contains(msg, "!gorandom") {
+		randomChar := functions.Random()
+		if err != nil {
+			fmt.Println("Error retriving random character,", err)
+			_, _ = s.ChannelMessageSend(m.ChannelID, "Stop breaking stuff.")
+			return
+		}
+
+		_, _ = s.ChannelMessageSend(m.ChannelID, randomChar)
+
+	}
 }
