@@ -45,3 +45,13 @@ func Card(input string) string {
 	skip = false
 	return url
 }
+
+//Place Generates Place Name
+func Place() string {
+	var placeName string
+	err = models.DB.QueryRow("SELECT NAME FROM CARDS WHERE TYPE = 'LAND' ORDER BY RAND() LIMIT 1").Scan(&placeName)
+	if err != nil {
+		panic(err.Error())
+	}
+	return placeName
+}

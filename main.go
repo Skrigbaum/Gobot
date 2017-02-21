@@ -79,18 +79,22 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	//if the message is !gobot return a helpful message
 	if msg == "!gobot" {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "Hi I'm Gobot. Currently typing '!card returns a random magic card', '!card type *X* returns a card of that type', '!card rarity *X* returns a card of that rarity'. \n!char returns a random D&D character.")
+		_, _ = s.ChannelMessageSend(m.ChannelID, `Hi I'm Gobot. Currently typing '!card returns a random magic card',
+'!card type *X* returns a card of that type', '!card rarity *X* returns a card of that rarity'.
+'!char returns a random D&D character', and '!place returns a random place name.'
+Please excuse any of my syntax or grammar errors, my creator doesn't know how to spell well.`)
 	}
 
 	if strings.Contains(msg, "!card") {
 		cardName := functions.Card(msg)
-		if err != nil {
-			fmt.Println("Error retriving card,", err)
-			return
-		}
 
 		_, _ = s.ChannelMessageSend(m.ChannelID, cardName)
 
+	}
+	if strings.Contains(msg, "!place") {
+		placeName := functions.Place()
+
+		_, _ = s.ChannelMessageSend(m.ChannelID, placeName)
 	}
 
 	if strings.Contains(msg, "!char") {
