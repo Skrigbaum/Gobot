@@ -98,7 +98,6 @@ Please excuse any of my syntax or grammar errors, my creator doesn't know how to
 
 		_, _ = s.ChannelMessageSend(m.ChannelID, placeName)
 	}
-
 	//Random fantasy character flag
 	if strings.Contains(msg, "!char") {
 		character := functions.Char()
@@ -110,6 +109,14 @@ Please excuse any of my syntax or grammar errors, my creator doesn't know how to
 
 		_, _ = s.ChannelMessageSend(m.ChannelID, character)
 
+	}
+
+	//Character Name flag
+	if strings.Contains(msg, "!name") {
+		var splitString = strings.Split(msg, " ")
+		placeName := functions.Name(splitString)
+
+		_, _ = s.ChannelMessageSend(m.ChannelID, placeName)
 	}
 
 	//Leauge of legends flags

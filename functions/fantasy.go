@@ -27,8 +27,6 @@ func Fantasy(msg string) string {
 		response = Char()
 	case "-q":
 		response = Quirk()
-	case "-n":
-		response = Name(splitString)
 	default:
 		response = "Error reading flag. Try asking !gobot for help."
 	}
@@ -41,10 +39,10 @@ func Name(msg []string) string {
 	var family string
 	var nameType string
 
-	if len(msg) == 2 {
+	if len(msg) == 1 {
 		msg = append(msg, "-e")
 	}
-	switch flag := msg[2]; flag {
+	switch flag := msg[1]; flag {
 	case "-m":
 		nameType = "male"
 	case "-f":
