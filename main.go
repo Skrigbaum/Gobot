@@ -85,18 +85,21 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 Please excuse any of my syntax or grammar errors, my creator doesn't know how to spell well.`)
 	}
 
+	//card flag section
 	if strings.Contains(msg, "!card") {
 		cardName := functions.Card(msg)
-
 		_, _ = s.ChannelMessageSend(m.ChannelID, cardName)
-
 	}
-	if strings.Contains(msg, "!place") {
-		placeName := functions.Place()
+
+	//fantasy flags
+	//fantasy Fantasy flag
+	if strings.Contains(msg, "!fantasy") {
+		placeName := functions.Fantasy(msg)
 
 		_, _ = s.ChannelMessageSend(m.ChannelID, placeName)
 	}
 
+	//Random fantasy character flag
 	if strings.Contains(msg, "!char") {
 		character := functions.Char()
 		if err != nil {
@@ -109,21 +112,22 @@ Please excuse any of my syntax or grammar errors, my creator doesn't know how to
 
 	}
 
-	if strings.Contains(msg, "!pro") {
+	//Leauge of legends flags
+	//League summoner recent game history flag
+	if strings.Contains(msg, "!recent") {
 		var game = functions.League(msg)
 		if err != nil {
 			fmt.Println("Error retriving league info,", err)
 			_, _ = s.ChannelMessageSend(m.ChannelID, "Stop breaking stuff.")
 			return
 		}
-
 		for _, resp := range game {
 			message.WriteString(resp + "\n")
 		}
 		_, _ = s.ChannelMessageSend(m.ChannelID, message.String())
 		message.Reset()
 	}
-
+	//Random League Character generation
 	if strings.Contains(msg, "!gorandom") {
 		randomChar := functions.Random()
 		if err != nil {
