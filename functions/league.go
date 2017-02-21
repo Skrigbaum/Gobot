@@ -33,16 +33,17 @@ func League(input string) []string {
 			response = append(response, "Game ID: "+strconv.FormatInt(game.GameID, 10))
 			response = append(response, "Playing: "+ChampName(game.ChampionID))
 			response = append(response, "Score: "+strconv.Itoa(game.Statistics.ChampionsKilled)+"/"+strconv.Itoa(game.Statistics.NumDeaths)+"/"+strconv.Itoa(game.Statistics.Assists))
-			if game.Statistics.NexusKilled == true {
-				response = append(response, "You Lost \n")
-			} else {
+			if game.Statistics.Win {
 				response = append(response, "You Won \n")
+			} else {
+				response = append(response, "You Lost \n")
 			}
 		}
 	}
 	return response
 }
 
+//Random is used to select and return a random league champion
 func Random() string {
 	var char string
 	for k := range Champions {
