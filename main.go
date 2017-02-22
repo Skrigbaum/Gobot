@@ -81,7 +81,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if msg == "!gobot" {
 		_, _ = s.ChannelMessageSend(m.ChannelID, `Hi I'm Gobot. Currently typing '!card returns a random magic card',
 '!card type *X* returns a card of that type', '!card rarity *X* returns a card of that rarity'.
-'!char returns a random D&D character', and '!place returns a random place name.'
+'!fantasy -c returns a random D&D character', and '!fantasy - preturns a random place name.'
+'!name -m returns a random male name', '!name -f returns a random female name', '!name -l to return a family name'
 Please excuse any of my syntax or grammar errors, my creator doesn't know how to spell well.`)
 	}
 

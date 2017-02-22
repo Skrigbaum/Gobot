@@ -90,7 +90,7 @@ func Char() string {
 	_ = models.DB.QueryRow("SELECT class FROM magic.character where class != '' ORDER BY RAND() LIMIT 1;").Scan(&class)
 	_ = models.DB.QueryRow("SELECT location FROM magic.character where location != '' ORDER BY RAND() LIMIT 1;").Scan(&location)
 	_ = models.DB.QueryRow("SELECT quirk FROM magic.character where quirk != '' ORDER BY RAND() LIMIT 1;").Scan(&quirk)
-	var chars = fmt.Sprintf("Your character is a " + adj + " " + race + ". They are a " + class + " from the " + location + ", that " + quirk)
+	var chars = fmt.Sprintf("Your character is a " + adj + " " + race + ". They are a " + class + " from the *" + location + "*, that " + quirk)
 	chars = strings.ToLower(chars)
 	return chars
 }
