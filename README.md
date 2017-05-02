@@ -20,4 +20,4 @@ Discord bot using GO with random features
 
 
 ## Work in Progress
-* Unknown - researching new ideas.
+* Create sample DB script with fill data.
