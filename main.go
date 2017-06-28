@@ -90,6 +90,13 @@ Please excuse any of my syntax or grammar errors, my creator doesn't know how to
 	if strings.Contains(msg, "!card") {
 		cardName := functions.Card(msg)
 		_, _ = s.ChannelMessageSend(m.ChannelID, cardName)
+
+	}
+
+	//Set abbreviation input to full name
+	if strings.Contains(msg, "!set") {
+		setName := functions.SetName(msg)
+		_, _ = s.ChannelMessageSend(m.ChannelID, setName)
 	}
 
 	//fantasy flags

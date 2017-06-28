@@ -23,11 +23,19 @@ func Card(input string) string {
 	}
 	//Type check
 	if !skip && splitString[1] == "type" && len(splitString) > 2 {
-		var typeErr = models.DB.QueryRow("SELECT MULTIVERSEID FROM CARDS WHERE TYPE = '" + splitString[2] + "' ORDER BY RAND() LIMIT 1").Scan(&name)
+		var typeErr = models.DB.QueryRow("SELECT MULTIVERSEID FROM CARDS WHERE TYPE LIKE '" + splitString[2] + "%' ORDER BY RAND() LIMIT 1").Scan(&name)
 		if typeErr != nil {
 			return "There seems to have been a problem with the type you entered, please try again."
 		}
 	}
+	//Set check
+	if !skip && splitString[1] == "set" && len(splitString) > 2 {
+		var typeErr = models.DB.QueryRow("SELECT MULTIVERSEID FROM CARDS WHERE SETCODE = '" + splitString[2] + "' ORDER BY RAND() LIMIT 1").Scan(&name)
+		if typeErr != nil {
+			return "There seems to have been a problem with the type you entered, please try again."
+		}
+	}
+
 	//Name check
 	if !skip && splitString[1] == "rarity" && len(splitString) > 2 {
 		var nameErr = models.DB.QueryRow("SELECT MULTIVERSEID FROM CARDS WHERE rarity like '" + splitString[2] + "%' ORDER BY RAND() LIMIT 1").Scan(&name)

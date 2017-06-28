@@ -1,7 +1,7 @@
 # Gobot
 Discord bot using GO with random features
 
-##Current functionality
+## Current functionality
 * !gobot - Help menu
 * !fantasy - fantasy flag for generation
   * !fantasy *-c* - generates random D&D character idea
