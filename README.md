@@ -1,5 +1,5 @@
 # Gobot
-Discord bot using GO with random features
+Discord bot programmed in Go. The primary use for this bot is to help with writers block and provide inspiration by using Magic The Gathering cards. https://mtgjson.com provides the MTG card list via the AllSets.json file.
 
 ## Current functionality
 * !gobot - Help menu
