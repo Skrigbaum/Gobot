@@ -8,18 +8,26 @@ import (
 )
 
 var (
-	err      error
-	adj      string
-	race     string
-	class    string
-	location string
-	quirk    string
-	response string
+	err        error
+	adj        string
+	race       string
+	class      string
+	location   string
+	quirk      string
+	response   string
+	problem    string
+	setting    string
+	solution   string
+	helper     string
+	antagonist string
 )
 
 //Fantasy checks secondary flag and redirect to proper function
 func Fantasy(msg string) string {
 	var splitString = strings.Split(msg, " ")
+	if len(splitString) <= 1 {
+		return "Please enter flag."
+	}
 	switch flag := splitString[1]; flag {
 	case "-p":
 		response = Land()
@@ -27,6 +35,8 @@ func Fantasy(msg string) string {
 		response = Char()
 	case "-q":
 		response = Quirk()
+	case "-a":
+		response = Adventure()
 	default:
 		response = "Error reading flag. Try asking !gobot for help."
 	}
@@ -80,6 +90,18 @@ func Land() string {
 		return "There seems to have been a problem finding you a place name."
 	}
 	return location
+}
+
+//Adventure generates a random adventure for D&D.
+func Adventure() string {
+	_ = models.DB.QueryRow("Select Name from magic.cards where type like '%Artifact%' order by RAND() limit 1;").Scan(&solution)
+	_ = models.DB.QueryRow("Select Name from magic.cards where type like '%Creature%' or type like '%enchantment%' or type like '%conspiracy%' or type like '%Phenomenon%' or type like '%Planeswalker%' or type like '%Vanguard%' order by RAND() limit 1;").Scan(&problem)
+	_ = models.DB.QueryRow("Select Name from magic.cards where type like '%Land% 'or type like '%Plane %' order by RAND() limit 1;").Scan(&setting)
+	_ = models.DB.QueryRow("Select Name from magic.cards where type like '%Creature%' or type like '%PlanesWalker%' order by RAND() limit 1;").Scan(&helper)
+	_ = models.DB.QueryRow("Select Name from magic.cards where type like '%Creature%' or type like '%PlanesWalker%' order by RAND() limit 1;").Scan(&antagonist)
+
+	var response = fmt.Sprintf("Problem: " + problem + "\n" + "Setting: " + setting + "\n" + "Helper: " + helper + "\n" + "Possible Solution: " + solution + "\n" + "Antagonist: " + antagonist)
+	return response
 }
 
 //Char is used to generate potential character ideas

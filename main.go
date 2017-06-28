@@ -81,8 +81,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if msg == "!gobot" {
 		_, _ = s.ChannelMessageSend(m.ChannelID, `Hi I'm Gobot. Currently typing '!card returns a random magic card',
 '!card type *X* returns a card of that type', '!card rarity *X* returns a card of that rarity'.
-'!fantasy -c returns a random D&D character', and '!fantasy - preturns a random place name.'
-'!name -m returns a random male name', '!name -f returns a random female name', '!name -l to return a family name'
+'!fantasy -c returns a random D&D character', and '!fantasy - p returns a random place name, and !fantasy -a generates an adventure idea.'
+'!name -m returns a random male name', '!name -f returns a random female name', '!name -l to return a family name',
+'/roll XdY will also roll die for you! ex. /roll 3d6. Feel free to add modifiers to the dice as well. ex. 3d6+2'
 Please excuse any of my syntax or grammar errors, my creator doesn't know how to spell well.`)
 	}
 
@@ -97,6 +98,12 @@ Please excuse any of my syntax or grammar errors, my creator doesn't know how to
 	if strings.Contains(msg, "!set") {
 		setName := functions.SetName(msg)
 		_, _ = s.ChannelMessageSend(m.ChannelID, setName)
+	}
+
+	//Roll flag
+	if strings.Contains(msg, "/roll") {
+		roll := functions.Rolling(msg)
+		_, _ = s.ChannelMessageSend(m.ChannelID, roll)
 	}
 
 	//fantasy flags
