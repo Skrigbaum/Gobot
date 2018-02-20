@@ -94,6 +94,14 @@ Please excuse any of my syntax or grammar errors, my creator doesn't know how to
 
 	}
 
+	//card flag section
+	if strings.Contains(msg, "!load") {
+		fmt.Println("Hit the Load")
+		functions.LoadCards()
+		_, _ = s.ChannelMessageSend(m.ChannelID, "Success")
+
+	}
+
 	//Set abbreviation input to full name
 	if strings.Contains(msg, "!set") {
 		setName := functions.SetName(msg)

@@ -7,6 +7,17 @@ import (
 
 //Setcodes map of all current MTG sets
 var Setcodes = map[string]string{
+	"Core 2019":                      "M19",
+	"Dominaria":                      "DOM",
+	"Masters 25":                     "A25",
+	"Rivals of Ixalan":               "RIX",
+	"Unstable":                       "UST",
+	"From the Vault: Transform":      "V17",
+	"Explorers of Ixalan":            "E02",
+	"Iconic Masters":                 "IMA",
+	"Duel Decks: Merfolk vs Goblins": "DDT",
+	"Ixalan":                 "XLN",
+	"Commander 2017":         "C17",
 	"Hour of Devastation":    "HOU",
 	"Archenemy: Nicol Bolas": "AC2",
 	"Commander Anthology":    "CMT",
