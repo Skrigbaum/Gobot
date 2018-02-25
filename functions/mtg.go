@@ -2,6 +2,7 @@ package functions
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/Skrigbaum/Gobot/models"
@@ -10,6 +11,11 @@ import (
 //Card grabbed based on input
 func Card(input string) string {
 	var name string
+	var setting string
+	var antagonist string
+	var helper string
+	var problem string
+	var solution string
 	var skip bool
 	var splitString = strings.Split(input, " ")
 
@@ -43,15 +49,33 @@ func Card(input string) string {
 			return "There seems to have been a problem with the rarity you entered, please try again."
 		}
 	}
+
+	//Adventure check
+	if !skip && splitString[1] == "adv" {
+		_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Artifact%' or type like '%Sorcery%' order by RAND() limit 1;").Scan(&solution)
+		_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Creature%' or type like '%enchantment%' or type like '%conspiracy%' or type like '%Phenomenon%' or type like '%Planeswalker%' or type like '%Vanguard%' order by RAND() limit 1;").Scan(&problem)
+		_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Land%' order by RAND() limit 1;").Scan(&setting)
+		_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Creature%' or type like '%PlanesWalker%' order by RAND() limit 1;").Scan(&helper)
+		_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Creature%' or type like '%PlanesWalker%' order by RAND() limit 1;").Scan(&antagonist)
+
+		test1 := ApiCall(solution)
+		test2 := ApiCall(problem)
+		test3 := ApiCall(setting)
+		test4 := ApiCall(helper)
+		test5 := ApiCall(antagonist)
+
+		var response = fmt.Sprintf("Problem: " + test2 + "\n" + "Setting: " + test3 + "\n" + "Helper: " + test4 + "\n" + "Possible Solution: " + test1 + "\n" + "Antagonist: " + test5)
+		return response
+	}
 	//Default resonse if inproper command
 	if name == "" {
 		return "There seems to have been a problem with the command you entered, please try again."
 	}
 
-	var url = fmt.Sprintf("http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + name + "&type=card")
+	respURL := ApiCall(name)
 	name = ""
 	skip = false
-	return url
+	return respURL
 }
 
 //Place Generates Place Name
@@ -62,4 +86,29 @@ func Place() string {
 		panic(err.Error())
 	}
 	return placeName
+}
+
+func ApiCall(name string) string {
+	var url2 = fmt.Sprintf("https://api.scryfall.com/cards/multiverse/" + name)
+	req, err := http.NewRequest("GET", url2, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+	test := req.URL.Query()
+	test.Add(":id", "url")
+	test.Add("format", "image")
+	test.Add("version", "large")
+	req.URL.RawQuery = test.Encode()
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err.Error())
+	} else {
+		fmt.Println("Processing...")
+		data := resp.Request.URL.String()
+		fmt.Println(data)
+		return string(data)
+	}
+
 }
