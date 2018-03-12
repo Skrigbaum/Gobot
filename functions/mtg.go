@@ -34,6 +34,13 @@ func Card(input string) string {
 			return "There seems to have been a problem with the type you entered, please try again."
 		}
 	}
+	//subtype check
+	if !skip && splitString[1] == "subtype" && len(splitString) > 2 {
+		var typeErr = models.DB.QueryRow("SELECT MULTIVERSEID FROM CARDS WHERE SUBTYPE = '" + splitString[2] + "' OR SUBTYPE2 = '" + splitString[2] + "' OR SUBTYPE3 = '" + splitString[2] + "' ORDER BY RAND() LIMIT 1").Scan(&name)
+		if typeErr != nil {
+			return "There seems to have been a problem with the type you entered, please try again."
+		}
+	}
 	//Set check
 	if !skip && splitString[1] == "set" && len(splitString) > 2 {
 		var typeErr = models.DB.QueryRow("SELECT MULTIVERSEID FROM CARDS WHERE SETCODE = '" + splitString[2] + "' ORDER BY RAND() LIMIT 1").Scan(&name)
