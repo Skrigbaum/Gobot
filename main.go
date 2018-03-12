@@ -77,96 +77,42 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	//if the message is !gobot return a helpful message
-	if msg == "!gobot" {
-		_, _ = s.ChannelMessageSend(m.ChannelID, `Hi I'm Gobot. Currently typing '!card returns a random magic card',
-'!card type *X* returns a card of that type', '!card rarity *X* returns a card of that rarity'.
-'!fantasy -c returns a random D&D character', and '!fantasy - p returns a random place name, and !fantasy -a generates an adventure idea.'
-'!name -m returns a random male name', '!name -f returns a random female name', '!name -l to return a family name',
-'/roll XdY will also roll die for you! ex. /roll 3d6. Feel free to add modifiers to the dice as well. ex. 3d6+2'
-Please excuse any of my syntax or grammar errors, my creator doesn't know how to spell well.`)
-	}
-
-	//card flag section
-	if strings.Contains(msg, "!card") {
+	switch msg {
+	case "!card":
+		fmt.Println("Hit Print")
 		cardName := functions.Card(msg)
 		_, _ = s.ChannelMessageSend(m.ChannelID, cardName)
-
-	}
-
-	//card flag section
-	if strings.Contains(msg, "!load") {
+	case "!gobot":
+		_, _ = s.ChannelMessageSend(m.ChannelID, `Hi I'm Gobot. Currently typing '!card returns a random magic card',
+			'!card type *X* returns a card of that type', '!card rarity *X* returns a card of that rarity'.
+			'!fantasy -c returns a random D&D character', and '!fantasy - p returns a random place name, and !fantasy -a generates an adventure idea.'
+			'!name -m returns a random male name', '!name -f returns a random female name', '!name -l to return a family name',
+			'/roll XdY will also roll die for you! ex. /roll 3d6. Feel free to add modifiers to the dice as well. ex. 3d6+2'
+			Please excuse any of my syntax or grammar errors, my creator doesn't know how to spell well.`)
+	case "!load":
 		fmt.Println("Hit the Load")
 		functions.LoadCards()
 		_, _ = s.ChannelMessageSend(m.ChannelID, "Success")
-
-	}
-
-	//Set abbreviation input to full name
-	if strings.Contains(msg, "!set") {
+	case "!set":
 		setName := functions.SetName(msg)
 		_, _ = s.ChannelMessageSend(m.ChannelID, setName)
-	}
-
-	//Roll flag
-	if strings.Contains(msg, "/roll") {
+	case "/roll":
 		roll := functions.Rolling(msg)
 		_, _ = s.ChannelMessageSend(m.ChannelID, roll)
-	}
-
-	//fantasy flags
-	//fantasy Fantasy flag
-	if strings.Contains(msg, "!fantasy") {
+	case "!fantasy":
 		placeName := functions.Fantasy(msg)
-
 		_, _ = s.ChannelMessageSend(m.ChannelID, placeName)
-	}
-	//Random fantasy character flag
-	if strings.Contains(msg, "!char") {
+	case "!char":
 		character := functions.Char()
 		if err != nil {
 			fmt.Println("Error retriving character,", err)
 			_, _ = s.ChannelMessageSend(m.ChannelID, "Stop breaking stuff.")
 			return
 		}
-
 		_, _ = s.ChannelMessageSend(m.ChannelID, character)
-
-	}
-
-	//Character Name flag
-	if strings.Contains(msg, "!name") {
+	case "!name":
 		var splitString = strings.Split(msg, " ")
 		placeName := functions.Name(splitString)
-
 		_, _ = s.ChannelMessageSend(m.ChannelID, placeName)
-	}
-
-	//Leauge of legends flags
-	//League summoner recent game history flag
-	if strings.Contains(msg, "!recent") {
-		var game = functions.League(msg)
-		if err != nil {
-			fmt.Println("Error retriving league info,", err)
-			_, _ = s.ChannelMessageSend(m.ChannelID, "Stop breaking stuff.")
-			return
-		}
-		for _, resp := range game {
-			message.WriteString(resp + "\n")
-		}
-		_, _ = s.ChannelMessageSend(m.ChannelID, message.String())
-		message.Reset()
-	}
-	//Random League Character generation
-	if strings.Contains(msg, "!gorandom") {
-		randomChar := functions.Random()
-		if err != nil {
-			fmt.Println("Error retriving random character,", err)
-			_, _ = s.ChannelMessageSend(m.ChannelID, "Stop breaking stuff.")
-			return
-		}
-
-		_, _ = s.ChannelMessageSend(m.ChannelID, randomChar)
-
 	}
 }
