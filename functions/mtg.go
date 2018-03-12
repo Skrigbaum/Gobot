@@ -17,7 +17,7 @@ func Card(input string) string {
 	var problem string
 	var solution string
 	var skip bool
-	var splitString = strings.Split(input, " ")
+	var splitString = strings.Fields(input)
 
 	//Default Card call
 	if len(splitString) == 1 {
@@ -59,27 +59,44 @@ func Card(input string) string {
 
 	//Adventure check
 	if !skip && splitString[1] == "adv" {
+		if len(splitString) > 2 {
+			_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Artifact%' or type like '%Sorcery%' AND setcode = '" + splitString[2] + "' order by RAND() limit 1;").Scan(&solution)
+			_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Creature%' or type like '%enchantment%' or type like '%conspiracy%' or type like '%Phenomenon%' or type like '%Planeswalker%' or type like '%Vanguard%' AND setcode = '" + splitString[2] + "' order by RAND() limit 1;").Scan(&problem)
+			_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Land%' AND setcode = '" + splitString[2] + "' order by RAND() limit 1;").Scan(&setting)
+			_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Creature%' or type like '%PlanesWalker%' AND setcode = '" + splitString[2] + "' order by RAND() limit 1;").Scan(&helper)
+			_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Creature%' or type like '%PlanesWalker%' AND setcode = '" + splitString[2] + "' order by RAND() limit 1;").Scan(&antagonist)
+
+			test1 := APICall(solution)
+			test2 := APICall(problem)
+			test3 := APICall(setting)
+			test4 := APICall(helper)
+			test5 := APICall(antagonist)
+
+			var response = fmt.Sprintf("Problem: " + test2 + "\n" + "Setting: " + test3 + "\n" + "Helper: " + test4 + "\n" + "Possible Solution: " + test1 + "\n" + "Antagonist: " + test5)
+			return response
+		}
 		_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Artifact%' or type like '%Sorcery%' order by RAND() limit 1;").Scan(&solution)
 		_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Creature%' or type like '%enchantment%' or type like '%conspiracy%' or type like '%Phenomenon%' or type like '%Planeswalker%' or type like '%Vanguard%' order by RAND() limit 1;").Scan(&problem)
 		_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Land%' order by RAND() limit 1;").Scan(&setting)
 		_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Creature%' or type like '%PlanesWalker%' order by RAND() limit 1;").Scan(&helper)
 		_ = models.DB.QueryRow("Select MULTIVERSEID from MTG.cards where type like '%Creature%' or type like '%PlanesWalker%' order by RAND() limit 1;").Scan(&antagonist)
 
-		test1 := ApiCall(solution)
-		test2 := ApiCall(problem)
-		test3 := ApiCall(setting)
-		test4 := ApiCall(helper)
-		test5 := ApiCall(antagonist)
+		test1 := APICall(solution)
+		test2 := APICall(problem)
+		test3 := APICall(setting)
+		test4 := APICall(helper)
+		test5 := APICall(antagonist)
 
 		var response = fmt.Sprintf("Problem: " + test2 + "\n" + "Setting: " + test3 + "\n" + "Helper: " + test4 + "\n" + "Possible Solution: " + test1 + "\n" + "Antagonist: " + test5)
 		return response
+
 	}
 	//Default resonse if inproper command
 	if name == "" {
 		return "There seems to have been a problem with the command you entered, please try again."
 	}
 
-	respURL := ApiCall(name)
+	respURL := APICall(name)
 	name = ""
 	skip = false
 	return respURL
@@ -95,7 +112,8 @@ func Place() string {
 	return placeName
 }
 
-func ApiCall(name string) string {
+//APICall Exports API call for future extensions
+func APICall(name string) string {
 	var url2 = fmt.Sprintf("https://api.scryfall.com/cards/multiverse/" + name)
 	req, err := http.NewRequest("GET", url2, nil)
 	if err != nil {

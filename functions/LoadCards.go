@@ -44,6 +44,9 @@ func LoadCards() {
 		print(err)
 	}
 
+	//Clean DB prior to run
+	models.DB.Exec("Truncate TABLE CARDS;")
+
 	//DB connection established
 
 	//Iterate through sets structs and load requried info into DB

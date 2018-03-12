@@ -15,11 +15,12 @@ import (
 
 // Variables used for command line parameters
 var (
-	buffer  = make([][]byte, 0)
-	Token   string
-	BotID   string
-	err     error
-	message bytes.Buffer
+	buffer    = make([][]byte, 0)
+	Token     string
+	BotID     string
+	err       error
+	message   bytes.Buffer
+	switchCon []string
 )
 
 func init() {
@@ -76,10 +77,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == BotID {
 		return
 	}
+	switchCon = strings.Fields(msg)
 
-	switch msg {
+	switch switchCon[0] {
 	case "!card":
-		fmt.Println("Hit Print")
 		cardName := functions.Card(msg)
 		_, _ = s.ChannelMessageSend(m.ChannelID, cardName)
 	case "!gobot":

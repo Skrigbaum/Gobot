@@ -199,13 +199,16 @@ var setmatch string
 
 //SetName iterates through and matches ID and name
 func SetName(setcode string) string {
+	fmt.Println(setcode)
 	var splitString = strings.Split(setcode, " ")
 	setmatch = "Could not find match"
 	if len(splitString) != 2 {
 		return "Please Submit Setcode in format : !set *XYZ*"
 	}
 	setcode = strings.ToUpper(splitString[1])
-	fmt.Println(setcode)
+	if string(setcode) == "LIST" {
+		return "https://mtg.gamepedia.com/Template:List_of_Magic_sets"
+	}
 	for names, v := range Setcodes {
 		if v == setcode {
 			setmatch = names
